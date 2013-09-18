@@ -17,7 +17,37 @@
 # - Stashes the current uncommited changes of the current branch, and switches
 #   back to that state, after deploying the commit diff.
 #
+# Arguments
+# ---------
+# 1: Name of the branch: e.g. "mybranch" or "origin/66-hello"
+#    "bash staging.sh origin/66-hello"
+#
+# Options
+# -------
+# - currently none -
+#
 ################################################################################
+
+# Do not proceed on error
+set -e
+
+################################################################################
+# Handle input
+################################################################################
+
+# The first argument will be our source branch.
+if [ "$1" == "" ]
+then
+  echo "No branch given."
+  exit
+elif [ "$(git show-ref $1)" == "" ]
+then
+  echo "Branch '$1' does not exist."
+  exit
+else
+  echo "Processing branch '$1' ..."
+  SOURCE_BRANCH="$1"
+fi
 
 ################################################################################
 # Basic hardcoded variables
@@ -25,7 +55,6 @@
 ################################################################################
 STAGING_REMOTE="origin"
 STAGING_REMOTE_BRANCH="staging-test"
-SOURCE_BRANCH="123-feature-x"
 
 ################################################################################
 # Processing
@@ -34,8 +63,6 @@ SOURCE_BRANCH="123-feature-x"
 # Get the current branch, so we can switch back later.
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# Do not proceed on error
-set -e
 # Echo the command before executing it.
 set -x
 
