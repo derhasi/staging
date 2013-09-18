@@ -53,8 +53,8 @@ fi
 # Basic hardcoded variables
 # @todo: provide arguments and/or options
 ################################################################################
-STAGING_REMOTE="origin"
-STAGING_REMOTE_BRANCH="staging-test"
+STAGING_REMOTE="staging"
+STAGING_REMOTE_BRANCH="master"
 
 ################################################################################
 # Processing
