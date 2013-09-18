@@ -12,6 +12,11 @@
 # "diff commits" that changes the file state to a defined state of the given
 # branch.
 #
+# Usage
+# -----
+# 1.  change STAGING_REMOTE and STAGING_REMOTE_BRANCH to your needs
+# 2.  execute "bash staging.sh mybranchname"
+#
 # Features
 # --------
 # - Stashes the current uncommited changes of the current branch, and switches
