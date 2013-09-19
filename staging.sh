@@ -76,8 +76,14 @@ git fetch $STAGING_REMOTE
 
 TEMP_BRANCH=temp$(date +%s)
 
-# Stash the current changes, before switch branches.
-git stash save --include-untracked "Before stage $TEMP_BRANCH"
+# Stash the current changes (if some present), before switching branch.
+if [ "$(git status -s)" == "" ]
+then
+  STASHED=0
+else
+  STASHED=1
+  git stash save --include-untracked "Before stage $TEMP_BRANCH"
+fi
 
 # We build a temporarry local branch for the remote branch.
 echo "Building temporary branch: $TEMP_BRANCH"
@@ -109,8 +115,11 @@ git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH
 
 # Switch back to the further branch.
 git checkout $CURRENT_BRANCH
-# Apply stashed changes back to wroking directory.
-git stash pop
+# Apply stashed changes back to working directory.
+if [ $STASHED == 1 ]
+then
+  git stash pop
+fi
 
 # Finally we delete our temporary branch.
 git branch -D $TEMP_BRANCH
