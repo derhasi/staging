@@ -19,7 +19,17 @@ branch.
 
 ## Installation
 
-Composer: `composer global require derhasi/staging`
+### via composer
+
+`composer global require derhasi/staging`
+
+### Manually
+
+````
+curl -O https://raw.githubusercontent.com/derhasi/staging/master/staging
+chmod u+x staging
+mv staging /usr/local/bin/staging
+```
 
 ## Usage:
 
