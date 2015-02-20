@@ -1,5 +1,5 @@
 language: bash
-before_:
+before_script:
   - mkdir test-repo
   - git --git-dir=./test-repo init --bare
   - git remote add test ./test-repo
