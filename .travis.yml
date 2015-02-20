@@ -1,16 +1,17 @@
 language: bash
 before_script:
+  # Build changes in the repo
+  - git checkout -b sourceBranch
+  - touch file1.txt
+  - git commit -am "File 1"
+  - touch file1.txt
+  - git commit -am "File 2"
+  # Create a remote repo to test with
   - mkdir test-repo
   - git --git-dir=./test-repo init --bare
   - git remote add test ./test-repo
 script:
   # Init the test repo with a remoteBranch from current master.
   - bash staging.sh test remoteBranch master
-  # Build changes in the repo
-  - touch testfile.txt testfile2.txt
-  - git add testfile.txt
-  - git commit -m "Test 1"
-  - git add testfile2.txt
-  - git commit -m "Test 2"
-  # Push changes to remote.
-  - bash staging.sh test remoteBranch master
+  # Push changes from sourceBranch to remote.
+  - bash staging.sh test remoteBranch sourceBranch
