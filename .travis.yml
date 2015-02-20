@@ -15,4 +15,4 @@ script:
   # Init the test repo with a remoteBranch from current master.
   - ./staging test remoteBranch master
   # Push changes from sourceBranch to remote.
-  - ./staging test remoteBranch sourceBranch
+  - ./staging -v test remoteBranch sourceBranch
