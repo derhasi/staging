@@ -40,3 +40,22 @@ The command creates a commit on the `remoteBranch` with the exact code state of 
 
 * Stashes the current uncommited changes of the current branch, and switches back to that state, after deploying the
   commit diff.
+  
+## Example
+
+You have one stage environment available, where you are only allowed to push code via git. The corresponding git
+repository is located at `https://stage.example.com/site.git`. The branch to deploy to is `master`. 
+Now, you have got several branches in development (`123-story`, `124-event`, `125-contact`) you want to test on that
+staging environment. You can do that, one after another using _staging_.
+
+First, add your stage remote to your local repo: `git remote add stage https://stage.example.com/site.git
+
+Now you can deploy the code to your stage from any arbitraty branch.
+
+Let's start with the first: `staging stage master 123-story`.
+After that `git diff 123-story stage/master` would show no difference.
+
+With executing `staging stage master 124-event`, you will get the same for `git diff 123-story stage/master`.
+
+You even can enter `staging stage master origin/125-contact` to directly work with the a remote branch instead of a
+local branch.
