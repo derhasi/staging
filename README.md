@@ -20,7 +20,7 @@ branch.
 ## Usage:
 
 ```
-bash staging.sh [remote] [remoteBranch] [sourceBranch]"
+./staging [remote] [remoteBranch] [sourceBranch]"
 ```
 
 The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
@@ -31,9 +31,6 @@ The command creates a commit on the `remoteBranch` with the exact code state of 
 2. `[remoteBranch]`: Name of the remote branch to push the code to. Example: `master`
 3. `[sourceBranch]`: Name of the branch to get the code from. May be a local or a remote branch reference.
    Examples: "mybranch" or "origin/66-hello"
-
-1. change `STAGING_REMOTE` and `STAGING_REMOTE_BRANCH` to your needs
-2. execute `bash staging.sh mybranchname` to commit that branch to the _staging remote branch_
 
 ### Features
 

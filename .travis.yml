@@ -13,6 +13,6 @@ before_script:
   - git remote add test .
 script:
   # Init the test repo with a remoteBranch from current master.
-  - bash staging.sh test remoteBranch master
+  - ./staging test remoteBranch master
   # Push changes from sourceBranch to remote.
-  - bash staging.sh test remoteBranch sourceBranch
+  - ./staging test remoteBranch sourceBranch
