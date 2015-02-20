@@ -11,26 +11,44 @@ set -e
 # Handle input
 ################################################################################
 
-# The first argument will be our source branch.
+# The first argument will be our remote.
 if [ "$1" == "" ]
 then
-  echo "No branch given."
+  echo "No remote given."
   exit
-elif [ "$(git show-ref $1)" == "" ]
+elif ! git ls-remote $1 &>/dev/null
 then
-  echo "Branch '$1' does not exist."
+  echo "Remote '$1' does not exist."
   exit
 else
-  echo "Processing branch '$1' ..."
-  SOURCE_BRANCH="$1"
+  echo "# Remote: '$1'"
+  STAGING_REMOTE="$1"
 fi
 
-################################################################################
-# Basic hardcoded variables
-# @todo: provide arguments and/or options
-################################################################################
-STAGING_REMOTE="staging"
-STAGING_REMOTE_BRANCH="master"
+# The second argument will be the remote branch.
+if [ "$2" == "" ]
+then
+  echo "No remoteBranch given."
+  exit
+else
+  echo "# Remote branch '$STAGING_REMOTE/$2'"
+  STAGING_REMOTE_BRANCH="$2"
+fi
+
+# The third argument will be our source branch.
+if [ "$3" == "" ]
+then
+  echo "No sourceBranch given."
+  exit
+elif [ "$(git show-ref $3)" == "" ]
+then
+  echo "Source branch '$3' does not exist."
+  exit
+else
+  echo "# Source branch '$3'"
+  echo "Processing branch '$3' ..."
+  SOURCE_BRANCH="$3"
+fi
 
 ################################################################################
 # Processing
