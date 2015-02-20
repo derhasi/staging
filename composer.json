@@ -5,6 +5,6 @@
   "keywords": ["git", "bash"],
   "license": "GPL-2.0+",
   "bin": [
-    "staging.sh"
+    "staging"
   ]
 }
