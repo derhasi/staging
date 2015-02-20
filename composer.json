@@ -1,0 +1,10 @@
+{
+  "name": "derhasi/staging",
+  "description": "A helper script to deploy the exact code state from one branch to a remote branch.",
+  "type": "bash-script",
+  "keywords": ["git", "bash"],
+  "licence": "GPL-2.0+",
+  "bin": [
+    "staging.sh"
+  ]
+}
