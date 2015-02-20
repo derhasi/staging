@@ -12,6 +12,8 @@ before_script:
   # We use the current repo as remote repo
   - git remote add test .
 script:
+  # Show help
+  - ./staging -h
   # Init the test repo with a remoteBranch from current master.
   - ./staging test remoteBranch master
   # Push changes from sourceBranch to remote.
