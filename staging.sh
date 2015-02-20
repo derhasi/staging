@@ -61,7 +61,7 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 set -x
 
 # First collect the latest code from remote
-git fetch $STAGING_REMOTE
+git fetch-does-not-work-this-way $STAGING_REMOTE
 
 TEMP_BRANCH=temp$(date +%s)
 
