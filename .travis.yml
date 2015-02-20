@@ -9,10 +9,8 @@ before_script:
   - git commit -m "File 1"
   - git add file2.txt
   - git commit -m "File 2"
-  # Create a remote repo to test with
-  - mkdir test-repo
-  - git --git-dir=./test-repo init --bare
-  - git remote add test ./test-repo
+  # We use the current repo as remote repo
+  - git remote add test .
 script:
   # Init the test repo with a remoteBranch from current master.
   - bash staging.sh test remoteBranch master
