@@ -11,6 +11,10 @@ set -e
 # Defaults
 ################################################################################
 
+# By default we do not display output of subcommands.
+STDOUTHANDLER="null"
+GITOPTS="--quiet"
+
 #Help function
 function HELP {
   echo -e \\n"Usage: staging [-hv] remote remoteBranch sourceBranch"\\n
@@ -25,6 +29,8 @@ function HELP {
 while getopts :vh FLAG; do
   case $FLAG in
     v)  #set verbose output
+      STDOUTHANDLER="stdout"
+      GITOPTS=""
       set -x
       ;;
     h)  #show help
@@ -63,7 +69,7 @@ then
   echo "Remote '$1' does not exist."
   exit 1
 else
-  echo "# Remote: '$1'"
+  echo "(i) Remote: '$1'" >/dev/$STDOUTHANDLER
   STAGING_REMOTE="$1"
 fi
 
@@ -74,7 +80,7 @@ then
   HELP
   exit 1
 else
-  echo "# Remote branch '$STAGING_REMOTE/$2'"
+  echo "(i) Remote branch '$STAGING_REMOTE/$2'" >/dev/$STDOUTHANDLER
   STAGING_REMOTE_BRANCH="$2"
 fi
 
@@ -89,8 +95,7 @@ then
   echo "Source branch '$3' does not exist."
   exit 1
 else
-  echo "# Source branch '$3'"
-  echo "Processing branch '$3' ..."
+  echo "(i) Source branch '$3'" >/dev/$STDOUTHANDLER
   SOURCE_BRANCH="$3"
 fi
 
@@ -102,7 +107,7 @@ fi
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 # First collect the latest code from remote
-git fetch $STAGING_REMOTE
+git fetch $STAGING_REMOTE >/dev/$STDOUTHANDLER
 
 TEMP_BRANCH=temp$(date +%s)
 
@@ -112,17 +117,18 @@ then
   STASHED=0
 else
   STASHED=1
-  git stash save --include-untracked "Before stage $TEMP_BRANCH"
+  echo "(!) Backing up workding directory changes to stash.";
+  git stash save --include-untracked "Before stage $TEMP_BRANCH" >/dev/$STDOUTHANDLER
 fi
 
 # We build a temporarry local branch for the remote branch.
-echo "Building temporary branch: $TEMP_BRANCH"
+echo "Building temporary branch: $TEMP_BRANCH" >/dev/$STDOUTHANDLER
 if [ "$(git show-ref $STAGING_REMOTE/$STAGING_REMOTE_BRANCH)" == "" ]
 then
   # In the case there is no remote branch yet, we create a branch from the current branch.
-  git checkout -b $TEMP_BRANCH
+  git checkout $GITOPTS -b $TEMP_BRANCH >/dev/$STDOUTHANDLER
 else
-  git checkout -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+  git checkout $GITOPTS -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH" >/dev/$STDOUTHANDLER
 fi
 
 # Create diff to the source branch
@@ -137,32 +143,36 @@ then
   # Get sha from source branch for the commit message.
   SOURCE_SHA=$(git rev-parse "$SOURCE_BRANCH")
 
+  echo "( ) Building commit from $SOURCE_BRANCH (ref: $SOURCE_SHA)"
+
   # We might have some whitespace problems, when applying diffs, so we make sure
   # warnings to not kill our processing.
-  git apply --whitespace=nowarn "$TEMP_BRANCH.patch"
+  git apply --whitespace=nowarn "$TEMP_BRANCH.patch" >/dev/$STDOUTHANDLER
 
   # After applying the patch, we remove the patchfile, so it will not be part of
   # our diff commit.
-  rm "$TEMP_BRANCH.patch"
+  rm "$TEMP_BRANCH.patch" >/dev/$STDOUTHANDLER
 
   # Stage all files and commit it.
-  git add -A
-  git commit -m "Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)"
+  git add -A >/dev/$STDOUTHANDLER
+  git commit -m "Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)" >/dev/$STDOUTHANDLER
 else
   # We only have to remove the patch file, in the case it is empty.
-  rm "$TEMP_BRANCH.patch"
+  rm "$TEMP_BRANCH.patch" >/dev/$STDOUTHANDLER
 fi
 
 # In any case we push the state to the remote.
-git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH
+echo "(/) Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH >/dev/$STDOUTHANDLER
 
 # Switch back to the further branch.
-git checkout $CURRENT_BRANCH
+git checkout $GITOPTS $CURRENT_BRANCH >/dev/$STDOUTHANDLER
 # Apply stashed changes back to working directory.
 if [ $STASHED == 1 ]
 then
-  git stash pop
+  echo "(!) Restored workding directory changes from stash.";
+  git stash pop >/dev/$STDOUTHANDLER
 fi
 
 # Finally we delete our temporary branch.
-git branch -D $TEMP_BRANCH
+git branch -D $TEMP_BRANCH  >/dev/$STDOUTHANDLER
