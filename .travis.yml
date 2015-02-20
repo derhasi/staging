@@ -4,10 +4,11 @@ before_script:
   - git config --global user.name "Travis CI Test"
   # Build changes in the repo
   - git checkout -b sourceBranch
-  - touch file1.txt
-  - git commit -am "File 1"
-  - touch file1.txt
-  - git commit -am "File 2"
+  - touch file1.txt file2.txt
+  - git add file1.txt
+  - git commit -m "File 1"
+  - git add file2.txt
+  - git commit -m "File 2"
   # Create a remote repo to test with
   - mkdir test-repo
   - git --git-dir=./test-repo init --bare
