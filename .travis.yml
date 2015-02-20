@@ -15,6 +15,6 @@ script:
   # Show help
   - ./staging -h
   # Init the test repo with a remoteBranch from current master.
-  - ./staging test remoteBranch master
+  - ./staging test remoteBranch origin/master
   # Push changes from sourceBranch to remote.
   - ./staging -v test remoteBranch sourceBranch
