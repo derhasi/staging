@@ -11,15 +11,18 @@ set -e
 # Handle input
 ################################################################################
 
+USAGESTR="Usage: staging [remote] [remoteBranch] [sourceBranch]"
+
 # The first argument will be our remote.
 if [ "$1" == "" ]
 then
   echo "No remote given."
-  exit
+  echo "$USAGESTR"
+  exit 1
 elif ! git ls-remote $1 &>/dev/null
 then
   echo "Remote '$1' does not exist."
-  exit
+  exit 1
 else
   echo "# Remote: '$1'"
   STAGING_REMOTE="$1"
@@ -29,7 +32,8 @@ fi
 if [ "$2" == "" ]
 then
   echo "No remoteBranch given."
-  exit
+  echo "$USAGESTR"
+  exit 1
 else
   echo "# Remote branch '$STAGING_REMOTE/$2'"
   STAGING_REMOTE_BRANCH="$2"
@@ -39,11 +43,12 @@ fi
 if [ "$3" == "" ]
 then
   echo "No sourceBranch given."
-  exit
+  echo "$USAGESTR"
+  exit 1
 elif [ "$(git show-ref $3)" == "" ]
 then
   echo "Source branch '$3' does not exist."
-  exit
+  exit 1
 else
   echo "# Source branch '$3'"
   echo "Processing branch '$3' ..."
