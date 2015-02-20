@@ -107,7 +107,7 @@ fi
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 # First collect the latest code from remote
-git fetch $STAGING_REMOTE >/dev/$STDOUTHANDLER
+git fetch $GITOPTS $STAGING_REMOTE >/dev/$STDOUTHANDLER
 
 TEMP_BRANCH=temp$(date +%s)
 
