@@ -143,7 +143,7 @@ then
   # Get sha from source branch for the commit message.
   SOURCE_SHA=$(git rev-parse "$SOURCE_BRANCH")
 
-  echo "( ) Building commit from $SOURCE_BRANCH (ref: $SOURCE_SHA)"
+  echo "... Building commit from $SOURCE_BRANCH (ref: $SOURCE_SHA)"
 
   # We might have some whitespace problems, when applying diffs, so we make sure
   # warnings to not kill our processing.
@@ -162,7 +162,7 @@ else
 fi
 
 # In any case we push the state to the remote.
-echo "(/) Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+echo "... Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
 git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH >/dev/$STDOUTHANDLER
 
 # Switch back to the further branch.
