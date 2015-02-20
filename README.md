@@ -58,9 +58,9 @@ repository is located at `https://stage.example.com/site.git`. The branch to dep
 Now, you have got several branches in development (`123-story`, `124-event`, `125-contact`) you want to test on that
 staging environment. You can do that, one after another using _staging_.
 
-First, add your stage remote to your local repo: `git remote add stage https://stage.example.com/site.git
+First, add your stage remote to your local repo: `git remote add stage https://stage.example.com/site.git`.
 
-Now you can deploy the code to your stage from any arbitraty branch.
+Now you can deploy the code to your stage from any arbitrary branch.
 
 Let's start with the first: `staging stage master 123-story`.
 After that `git diff 123-story stage/master` would show no difference.
