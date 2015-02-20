@@ -91,22 +91,30 @@ fi
 #   applying binary changes
 git diff --full-index --binary -R $SOURCE_BRANCH > "$TEMP_BRANCH.patch"
 
-# Get sha from source branch.
-SOURCE_SHA=$(git rev-parse "$SOURCE_BRANCH")
 
-# We might have some whitespace problems, when applying diffs, so we make sure
-# warnings to not kill our processing.
-git apply --whitespace=nowarn "$TEMP_BRANCH.patch"
+# If the diff is not empty, we need to apply it to the temp branch.
+if [ -s "$TEMP_BRANCH.patch" ]
+then
+  # Get sha from source branch for the commit message.
+  SOURCE_SHA=$(git rev-parse "$SOURCE_BRANCH")
 
-# After applying the patch, we remove the patchfile, so it will not be part of
-# our diff commit.
-rm "$TEMP_BRANCH.patch"
+  # We might have some whitespace problems, when applying diffs, so we make sure
+  # warnings to not kill our processing.
+  git apply --whitespace=nowarn "$TEMP_BRANCH.patch"
 
-# Stage all files and commit it.
-git add -A
-git commit -m "Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)"
+  # After applying the patch, we remove the patchfile, so it will not be part of
+  # our diff commit.
+  rm "$TEMP_BRANCH.patch"
 
-# And push it back.
+  # Stage all files and commit it.
+  git add -A
+  git commit -m "Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)"
+else
+  # We only have to remove the patch file, in the case it is empty.
+  rm "$TEMP_BRANCH.patch"
+fi
+
+# In any case we push the state to the remote.
 git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH
 
 # Switch back to the further branch.
