@@ -1,5 +1,7 @@
 # staging
 
+![travis ci test status](https://api.travis-ci.org/derhasi/staging.svg)
+
 A helper script to deploy a specific code state from one git in another git repo.
 
 Bash script for deploying the exact state of a given branch to a remote branch. This is done by using "diff commits".
