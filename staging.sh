@@ -76,7 +76,14 @@ fi
 
 # We build a temporarry local branch for the remote branch.
 echo "Building temporary branch: $TEMP_BRANCH"
-git checkout -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+if [ "$(git show-ref $STAGING_REMOTE/$STAGING_REMOTE_BRANCH)" == "" ]
+then
+  # In the case there is no remote branch yet, we create a branch from the current branch.
+  git checkout -b $TEMP_BRANCH
+else
+  git checkout -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+fi
+
 
 # Create diff to the source branch
 # - reverted, because we want to add the diff to this branch
