@@ -17,10 +17,14 @@ we have got a single staging branch to deploy to. That branch only will get
 "diff commits" that changes the file state to a defined state of the given
 branch.
 
+## Installation
+
+Composer: `composer global require derhasi/staging`
+
 ## Usage:
 
 ```
-./staging [-hv] {remote} {remoteBranch} {sourceBranch}"
+staging [-hv] {remote} {remoteBranch} {sourceBranch}"
 ```
 
 The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
