@@ -4,20 +4,59 @@
 # @see README.md
 ################################################################################
 
-# Do not proceed on error
+# Do not proceed on errors
 set -e
 
 ################################################################################
-# Handle input
+# Defaults
 ################################################################################
 
-USAGESTR="Usage: staging [remote] [remoteBranch] [sourceBranch]"
+#Help function
+function HELP {
+  echo -e \\n"Usage: staging [-hv] remote remoteBranch sourceBranch"\\n
+  exit 1
+}
+
+################################################################################
+# Handle options
+# @see http://tuxtweaks.com/2014/05/bash-getopts/
+################################################################################
+
+while getopts :vh FLAG; do
+  case $FLAG in
+    v)  #set verbose output
+      set -x
+      ;;
+    h)  #show help
+      HELP
+      ;;
+    \?) #unrecognized option - show help
+      echo -e \\n"Option -$OPTARG not allowed."
+      echo -e "Use staging -h to see the help documentation."\\n
+      exit 2
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+################################################################################
+# Handle arguments
+################################################################################
+
+# Avoid ignoring appended options.
+if [ "$4" != "" ]
+then
+  echo "You only must provide three arguments."
+  HELP
+  exit 1;
+fi
 
 # The first argument will be our remote.
 if [ "$1" == "" ]
 then
   echo "No remote given."
-  echo "$USAGESTR"
+  HELP
   exit 1
 elif ! git ls-remote $1 &>/dev/null
 then
@@ -32,7 +71,7 @@ fi
 if [ "$2" == "" ]
 then
   echo "No remoteBranch given."
-  echo "$USAGESTR"
+  HELP
   exit 1
 else
   echo "# Remote branch '$STAGING_REMOTE/$2'"
@@ -43,7 +82,7 @@ fi
 if [ "$3" == "" ]
 then
   echo "No sourceBranch given."
-  echo "$USAGESTR"
+  HELP
   exit 1
 elif [ "$(git show-ref $3)" == "" ]
 then
@@ -61,9 +100,6 @@ fi
 
 # Get the current branch, so we can switch back later.
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
-# Echo the command before executing it.
-set -x
 
 # First collect the latest code from remote
 git fetch $STAGING_REMOTE
@@ -89,13 +125,11 @@ else
   git checkout -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
 fi
 
-
 # Create diff to the source branch
 # - reverted, because we want to add the diff to this branch
 # - full-index and binary flag are for providing complete information for even
 #   applying binary changes
 git diff --full-index --binary -R $SOURCE_BRANCH > "$TEMP_BRANCH.patch"
-
 
 # If the diff is not empty, we need to apply it to the temp branch.
 if [ -s "$TEMP_BRANCH.patch" ]

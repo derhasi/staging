@@ -20,17 +20,17 @@ branch.
 ## Usage:
 
 ```
-./staging [remote] [remoteBranch] [sourceBranch]"
+./staging [-hv] {remote} {remoteBranch} {sourceBranch}"
 ```
 
 The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
 
 ### Arguments
 
-1. `[remote]`: Name of the remote repository to push the code to. Example: `origin`
-2. `[remoteBranch]`: Name of the remote branch to push the code to. Example: `master`
-3. `[sourceBranch]`: Name of the branch to get the code from. May be a local or a remote branch reference.
-   Examples: "mybranch" or "origin/66-hello"
+1. `{remote}`: Name of the remote repository to push the code to. Example: `origin`
+2. `{remoteBranch}`: Name of the remote branch to push the code to. Example: `master`
+3. `{sourceBranch}`: Name of the branch to get the code from. May be a local or a remote branch reference.
+   Examples: `mybranch` or `origin/66-hello`
 
 ### Features
 
