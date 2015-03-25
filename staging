@@ -38,7 +38,7 @@ function VALIDATE_REMOTE {
     fi
 }
 
-# Validate remote repo
+# Validate remote branch
 function VALIDATE_REMOTE_BRANCH {
     # The second argument will be the remote branch.
     if [ "$2" == "" ]
@@ -49,6 +49,20 @@ function VALIDATE_REMOTE_BRANCH {
     else
       echo "(i) Remote branch '$1/$2'" >/dev/$STDOUTHANDLER
       STAGING_REMOTE_BRANCH="$2"
+    fi
+}
+
+# Validate local branch
+function VALIDATE_LOCAL_BRANCH {
+    # The second argument will be the remote branch.
+    if [ "$1" == "" ]
+    then
+      echo "No localBranch given."
+      HELP
+      exit 1
+    else
+      echo "(i) Local branch '$1'" >/dev/$STDOUTHANDLER
+      LOCAL_BRANCH="$1"
     fi
 }
 
@@ -75,7 +89,7 @@ function VALIDATE_SOURCE_BRANCH {
 # @see http://tuxtweaks.com/2014/05/bash-getopts/
 ################################################################################
 
-while getopts :vm:h FLAG; do
+while getopts :vm:lh FLAG; do
   case $FLAG in
     v)  #set verbose output
       STDOUTHANDLER="stdout"
@@ -84,6 +98,9 @@ while getopts :vm:h FLAG; do
       ;;
     m)  #custom message
       CUSTOM_MESSAGE="$OPTARG"
+      ;;
+    l) # allow local branch
+      LOCAL_BRANCH_MODE=true
       ;;
     h)  #show help
       HELP
@@ -103,19 +120,40 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 # Handle arguments
 ################################################################################
 
-# Avoid ignoring appended options.
-if [ "$4" != "" ]
+if [ $LOCAL_BRANCH_MODE ]
 then
-  echo "You only must provide three arguments."
-  HELP
-  exit 1;
+
+    # Avoid ignoring appended options.
+    if [ "$3" != "" ]
+    then
+      echo "You only must provide two arguments in local branch mode."
+      HELP
+      exit 1;
+    fi
+
+    # The first argument will be our remote.
+    VALIDATE_LOCAL_BRANCH "$1"                      # Builds $LOCAL_BRANCH
+    VALIDATE_SOURCE_BRANCH "$2"                     # Builds $SOURCE_BRANCH
+
+    STAGING_BRANCH="$LOCAL_BRANCH"
+
+else
+    # Avoid ignoring appended options.
+    if [ "$4" != "" ]
+    then
+      echo "You only must provide three arguments."
+      HELP
+      exit 1;
+    fi
+
+    # The first argument will be our remote.
+    VALIDATE_REMOTE "$1"                            # Builds $STAGING_REMOTE
+    VALIDATE_REMOTE_BRANCH "$STAGING_REMOTE" "$2"   # Builds $STAGING_REMOTE_BRANCH
+    VALIDATE_SOURCE_BRANCH "$3"                     # Builds $SOURCE_BRANCH
+
+    STAGING_BRANCH="$STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+
 fi
-
-# The first argument will be our remote.
-VALIDATE_REMOTE "$1"
-VALIDATE_REMOTE_BRANCH "$STAGING_REMOTE" "$2"
-VALIDATE_SOURCE_BRANCH "$3"
-
 
 ################################################################################
 # Processing
@@ -124,8 +162,11 @@ VALIDATE_SOURCE_BRANCH "$3"
 # Get the current branch, so we can switch back later.
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# First collect the latest code from remote
-git fetch $GITOPTS $STAGING_REMOTE >/dev/$STDOUTHANDLER
+# First collect the latest code from remote if we got one.
+if [ ! $LOCAL_BRANCH_MODE ]
+then
+    git fetch $GITOPTS $STAGING_REMOTE >/dev/$STDOUTHANDLER
+fi
 
 TEMP_BRANCH=temp$(date +%s)
 
@@ -141,12 +182,19 @@ fi
 
 # We build a temporarry local branch for the remote branch.
 echo "Building temporary branch: $TEMP_BRANCH" >/dev/$STDOUTHANDLER
-if [ "$(git show-ref $STAGING_REMOTE/$STAGING_REMOTE_BRANCH)" == "" ]
+if [ "$(git show-ref $STAGING_BRANCH)" == "" ]
 then
   # In the case there is no remote branch yet, we create a branch from the current branch.
   git checkout $GITOPTS -b $TEMP_BRANCH >/dev/$STDOUTHANDLER
+
+  # In local branch mode we need to make sure it exists locally.
+  if [ $LOCAL_BRANCH_MODE ]
+  then
+    git branch "$STAGING_BRANCH"
+  fi
+
 else
-  git checkout $GITOPTS -b $TEMP_BRANCH "$STAGING_REMOTE/$STAGING_REMOTE_BRANCH" >/dev/$STDOUTHANDLER
+  git checkout $GITOPTS -b $TEMP_BRANCH "$STAGING_BRANCH" >/dev/$STDOUTHANDLER
 fi
 
 # Create diff to the source branch
@@ -188,9 +236,15 @@ else
   rm "$TEMP_BRANCH.patch" >/dev/$STDOUTHANDLER
 fi
 
-# In any case we push the state to the remote.
-echo "... Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
-git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH >/dev/$STDOUTHANDLER
+if [ $LOCAL_BRANCH_MODE ]
+then
+    git checkout $GITOPTS $STAGING_BRANCH
+    git merge $GITOPTS $TEMP_BRANCH  >/dev/$STDOUTHANDLER
+else
+    # In any case we push the state to the remote.
+    echo "... Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
+    git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH >/dev/$STDOUTHANDLER
+fi
 
 # Switch back to the further branch.
 git checkout $GITOPTS $CURRENT_BRANCH >/dev/$STDOUTHANDLER

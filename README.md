@@ -34,7 +34,13 @@ mv staging /usr/local/bin/staging
 ## Usage:
 
 ```
-staging [-hv] {remote} {remoteBranch} {sourceBranch}"
+staging [-hv] [-m "..."] {remote} {remoteBranch} {sourceBranch}"
+```
+
+Or in _local branch mode_
+
+```
+staging -l [-hv] [-m "..."] {localBranch} {sourceBranch}"
 ```
 
 The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
@@ -52,6 +58,7 @@ The command creates a commit on the `remoteBranch` with the exact code state of 
 * `-v`: Provides verbose output
 * `-m "Custom commit message"`: Replaces the default message (`Staging: [source branch] (sha: [source sha])`) with the
   given custom one
+* `-l`: Enables _local branch mode_
 
 ### Features
 
