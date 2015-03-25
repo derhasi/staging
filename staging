@@ -20,6 +20,56 @@ function HELP {
   echo -e \\n"Usage: staging [-hv] [-m "..."] remote remoteBranch sourceBranch"\\n
 }
 
+# Validate remote repo
+function VALIDATE_REMOTE {
+    # The first argument will be our remote.
+    if [ "$1" == "" ]
+    then
+      echo "No remote given."
+      HELP
+      exit 1
+    elif ! git ls-remote $1 &>/dev/null
+    then
+      echo "Remote '$1' does not exist."
+      exit 1
+    else
+      echo "(i) Remote: '$1'" >/dev/$STDOUTHANDLER
+      STAGING_REMOTE="$1"
+    fi
+}
+
+# Validate remote repo
+function VALIDATE_REMOTE_BRANCH {
+    # The second argument will be the remote branch.
+    if [ "$2" == "" ]
+    then
+      echo "No remoteBranch given."
+      HELP
+      exit 1
+    else
+      echo "(i) Remote branch '$1/$2'" >/dev/$STDOUTHANDLER
+      STAGING_REMOTE_BRANCH="$2"
+    fi
+}
+
+# Validate source branch
+function VALIDATE_SOURCE_BRANCH {
+    # The third argument will be our source branch.
+    if [ "$1" == "" ]
+    then
+      echo "No sourceBranch given."
+      HELP
+      exit 1
+    elif [ "$(git show-ref $1)" == "" ]
+    then
+      echo "Source branch '$1' does not exist."
+      exit 1
+    else
+      echo "(i) Source branch '$1'" >/dev/$STDOUTHANDLER
+      SOURCE_BRANCH="$1"
+    fi
+}
+
 ################################################################################
 # Handle options
 # @see http://tuxtweaks.com/2014/05/bash-getopts/
@@ -62,45 +112,10 @@ then
 fi
 
 # The first argument will be our remote.
-if [ "$1" == "" ]
-then
-  echo "No remote given."
-  HELP
-  exit 1
-elif ! git ls-remote $1 &>/dev/null
-then
-  echo "Remote '$1' does not exist."
-  exit 1
-else
-  echo "(i) Remote: '$1'" >/dev/$STDOUTHANDLER
-  STAGING_REMOTE="$1"
-fi
+VALIDATE_REMOTE "$1"
+VALIDATE_REMOTE_BRANCH "$STAGING_REMOTE" "$2"
+VALIDATE_SOURCE_BRANCH "$3"
 
-# The second argument will be the remote branch.
-if [ "$2" == "" ]
-then
-  echo "No remoteBranch given."
-  HELP
-  exit 1
-else
-  echo "(i) Remote branch '$STAGING_REMOTE/$2'" >/dev/$STDOUTHANDLER
-  STAGING_REMOTE_BRANCH="$2"
-fi
-
-# The third argument will be our source branch.
-if [ "$3" == "" ]
-then
-  echo "No sourceBranch given."
-  HELP
-  exit 1
-elif [ "$(git show-ref $3)" == "" ]
-then
-  echo "Source branch '$3' does not exist."
-  exit 1
-else
-  echo "(i) Source branch '$3'" >/dev/$STDOUTHANDLER
-  SOURCE_BRANCH="$3"
-fi
 
 ################################################################################
 # Processing
