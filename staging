@@ -25,12 +25,15 @@ function HELP {
 # @see http://tuxtweaks.com/2014/05/bash-getopts/
 ################################################################################
 
-while getopts :vh FLAG; do
+while getopts :vm:h FLAG; do
   case $FLAG in
     v)  #set verbose output
       STDOUTHANDLER="stdout"
       GITOPTS=""
       set -x
+      ;;
+    m)  #custom message
+      CUSTOM_MESSAGE="$OPTARG"
       ;;
     h)  #show help
       HELP
@@ -155,7 +158,16 @@ then
 
   # Stage all files and commit it.
   git add -A >/dev/$STDOUTHANDLER
-  git commit -m "Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)" >/dev/$STDOUTHANDLER
+
+  # If no custom message was given, we use source branch and its commit sha for a message.
+  if [ "$CUSTOM_MESSAGE" == "" ]
+  then
+    COMMIT_MESSAGE="Staging: $SOURCE_BRANCH (sha: $SOURCE_SHA)"
+  else
+    COMMIT_MESSAGE="$CUSTOM_MESSAGE"
+  fi
+
+  git commit -m "$COMMIT_MESSAGE" >/dev/$STDOUTHANDLER
 else
   # We only have to remove the patch file, in the case it is empty.
   rm "$TEMP_BRANCH.patch" >/dev/$STDOUTHANDLER

@@ -46,6 +46,13 @@ The command creates a commit on the `remoteBranch` with the exact code state of 
 3. `{sourceBranch}`: Name of the branch to get the code from. May be a local or a remote branch reference.
    Examples: `mybranch` or `origin/66-hello`
 
+### Options
+
+* `-h`: Shows help message for the command
+* `-v`: Provides verbose output
+* `-m "Custom commit message"`: Replaces the default message (`Staging: [source branch] (sha: [source sha])`) with the
+  given custom one
+
 ### Features
 
 * Stashes the current uncommited changes of the current branch, and switches back to that state, after deploying the
