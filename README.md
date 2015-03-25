@@ -33,17 +33,18 @@ mv staging /usr/local/bin/staging
 
 ## Usage:
 
+The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
+
 ```
 staging [-hv] [-m "..."] {remote} {remoteBranch} {sourceBranch}"
 ```
 
-Or in _local branch mode_
+In _local branch mode_ the state is applied on a local branch without pushing to a remote repository.
 
 ```
 staging -l [-hv] [-m "..."] {localBranch} {sourceBranch}"
 ```
 
-The command creates a commit on the `remoteBranch` with the exact code state of the `sourceBranch`.
 
 ### Arguments
 
