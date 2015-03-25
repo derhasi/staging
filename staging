@@ -238,10 +238,11 @@ fi
 
 if [ $LOCAL_BRANCH_MODE ]
 then
-    git checkout $GITOPTS $STAGING_BRANCH
+    # In local branch mode, we need to merge the new commit in the existing local branch.
+    git checkout $GITOPTS $STAGING_BRANCH >/dev/$STDOUTHANDLER
     git merge $GITOPTS $TEMP_BRANCH  >/dev/$STDOUTHANDLER
 else
-    # In any case we push the state to the remote.
+    # In the remote case we push the state to the remote.
     echo "... Updating remote $STAGING_REMOTE/$STAGING_REMOTE_BRANCH"
     git push $STAGING_REMOTE HEAD:$STAGING_REMOTE_BRANCH >/dev/$STDOUTHANDLER
 fi
