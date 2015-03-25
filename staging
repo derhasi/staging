@@ -17,7 +17,10 @@ GITOPTS="--quiet"
 
 #Help function
 function HELP {
-  echo -e \\n"Usage: staging [-hv] [-m "..."] remote remoteBranch sourceBranch"\\n
+  echo "Usage:"
+  echo "  staging [-hv] [-m "..."] remote remoteBranch sourceBranch"
+  echo "  staging -l [-hv] [-m "..."] localBranch sourceBranch"
+  echo -e \\n"See README.md on https://github.com/derhasi/staging for more details"\\n
 }
 
 # Validate remote repo
