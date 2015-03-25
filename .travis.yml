@@ -2,6 +2,8 @@ language: bash
 before_script:
   - git config --global user.email "travisci@example.com"
   - git config --global user.name "Travis CI Test"
+  # Make sure all remote branches are fetched, so tests are run correctly.
+  - git fetch origin
   # Build changes in the repo
   - git checkout -b sourceBranch
   - touch file1.txt file2.txt
