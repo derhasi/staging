@@ -18,3 +18,5 @@ script:
   - ./staging test remoteBranch origin/master
   # Push changes from sourceBranch to remote.
   - ./staging -v test remoteBranch sourceBranch
+  # Test local mode
+  - ./staging -l localBranch sourceBranch
