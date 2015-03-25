@@ -17,7 +17,7 @@ GITOPTS="--quiet"
 
 #Help function
 function HELP {
-  echo -e \\n"Usage: staging [-hv] remote remoteBranch sourceBranch"\\n
+  echo -e \\n"Usage: staging [-hv] [-m "..."] remote remoteBranch sourceBranch"\\n
 }
 
 ################################################################################
