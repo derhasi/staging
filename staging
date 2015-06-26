@@ -188,7 +188,7 @@ echo "Building temporary branch: $TEMP_BRANCH" >/dev/$STDOUTHANDLER
 if [ "$(git show-ref $STAGING_BRANCH)" == "" ]
 then
   # In the case there is no remote branch yet, we create a branch from the current branch.
-  git checkout $GITOPTS -b $TEMP_BRANCH >/dev/$STDOUTHANDLER
+  git checkout $GITOPTS --force -b $TEMP_BRANCH >/dev/$STDOUTHANDLER
 
   # In local branch mode we need to make sure it exists locally.
   if [ $LOCAL_BRANCH_MODE ]
@@ -197,7 +197,7 @@ then
   fi
 
 else
-  git checkout $GITOPTS -b $TEMP_BRANCH "$STAGING_BRANCH" >/dev/$STDOUTHANDLER
+  git checkout $GITOPTS --force -b $TEMP_BRANCH "$STAGING_BRANCH" >/dev/$STDOUTHANDLER
 fi
 
 # Create diff to the source branch
@@ -242,7 +242,7 @@ fi
 if [ $LOCAL_BRANCH_MODE ]
 then
     # In local branch mode, we need to merge the new commit in the existing local branch.
-    git checkout $GITOPTS $STAGING_BRANCH >/dev/$STDOUTHANDLER
+    git checkout $GITOPTS --force $STAGING_BRANCH >/dev/$STDOUTHANDLER
     git merge $GITOPTS $TEMP_BRANCH  >/dev/$STDOUTHANDLER
 else
     # In the remote case we push the state to the remote.
@@ -251,7 +251,7 @@ else
 fi
 
 # Switch back to the further branch.
-git checkout $GITOPTS $CURRENT_BRANCH >/dev/$STDOUTHANDLER
+git checkout $GITOPTS --force $CURRENT_BRANCH >/dev/$STDOUTHANDLER
 # Apply stashed changes back to working directory.
 if [ $STASHED == 1 ]
 then
